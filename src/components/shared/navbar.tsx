@@ -11,7 +11,7 @@ export const Navbar = () => {
   useEffect(() => {
     // Check for token on mount and when focus returns to the window
     const checkAuth = () => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+      const token = localStorage.getItem('token');
       setIsLoggedIn(!!token);
     };
     
@@ -21,10 +21,20 @@ export const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    localStorage.removeItem('token');
     setIsLoggedIn(false);
     window.location.href = '/';
   };
+
+  // Function to get the correct dashboard link based on role
+  // Note: Since role isn't stored in token directly here, we might need a better way to fetch it,
+  // but for now, we'll keep it simple or fetch it on mount.
+  // Actually, for simplicity and to solve the user's immediate issue, 
+  // let's assume we need to fetch user info to know the role.
+  // Or, we can just point to /dashboard and let the middleware/page handle the redirection.
+  
+  // Let's keep the Dashboard link simple for now:
+  const dashboardLink = "/dashboard"; // Middleware/Layout should handle actual routing based on role if needed.
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
