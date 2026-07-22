@@ -17,7 +17,7 @@ function LoginContent() {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirectPath") || "/dashboard";
+  const redirectPath = searchParams.get("redirectPath") || "/";
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
