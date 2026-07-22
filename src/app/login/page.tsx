@@ -9,13 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, Suspense } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { getMe, login } from "@/services/authService";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirectPath") || "/dashboard";
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -26,11 +28,17 @@ function LoginContent() {
     try {
       setError(null);
       await login({ email: data.email, password: data.password });
-      await getMe();
+      const user = await getMe();
+      const nextPath =
+        user.role === "admin"
+          ? "/admin-dashboard"
+          : user.role === "doctor"
+            ? "/doctor-dashboard"
+            : redirectPath;
 
       setSuccess(true);
       setTimeout(() => {
-        router.push("/");
+        router.push(nextPath);
       }, 500);
     } catch (error) {
       console.error("Login failed:", error);
