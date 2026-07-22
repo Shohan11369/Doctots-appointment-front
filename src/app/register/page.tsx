@@ -61,7 +61,7 @@ export default function RegisterPage() {
               <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
-          <Button variant="outline" className="w-full gap-2" onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}>
+          <Button variant="outline" className="w-full gap-2" onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`}>
             Continue with Google
           </Button>
         </CardContent>

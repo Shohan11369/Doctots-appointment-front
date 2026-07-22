@@ -104,7 +104,7 @@ function LoginContent() {
           variant="outline"
           className="w-full gap-2"
           onClick={() =>
-            (window.location.href = "http://localhost:5000/api/auth/google")
+            (window.location.href =`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`)
           }
         >
           Continue with Google
