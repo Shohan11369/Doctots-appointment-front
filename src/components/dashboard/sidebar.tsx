@@ -24,7 +24,7 @@ export const Sidebar = () => {
   }, []);
 
   return (
-    <aside className="w-64 border-r bg-background min-h-screen p-6 hidden md:block">
+    <aside className="w-64 border-r bg-background min-h-screen p-6">
       <h2 className="font-bold text-2xl text-primary mb-2">MediQueue</h2>
       {user && (
         <div className="mb-8 p-3 bg-muted rounded-lg">

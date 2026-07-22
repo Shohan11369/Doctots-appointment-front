@@ -29,7 +29,7 @@ const links = [
 export const DoctorSidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="w-64 border-r bg-background min-h-screen p-6 hidden md:block">
+    <aside className="w-64 border-r bg-background min-h-screen p-6">
       <h2 className="font-bold text-2xl text-primary mb-8">MediQueue Pro</h2>
       <nav className="space-y-2">
         {links.map((link) => (
