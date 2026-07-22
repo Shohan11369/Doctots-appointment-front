@@ -1,22 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { DoctorDashboardCards } from "@/components/doctor-dashboard/dashboard-cards";
 import { DoctorAnalyticsCharts } from "@/components/doctor-dashboard/analytics-charts";
 import { getDoctorOverview } from "@/services/doctorService";
 
 export default function DoctorDashboardPage() {
+  const router = useRouter();
   const [overview, setOverview] = useState<null | Record<string, number>>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
     getDoctorOverview()
       .then((data) => setOverview(data))
       .catch((error) => {
         console.error("Failed to load doctor overview:", error);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   const stats = overview
     ? [

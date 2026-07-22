@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminDashboardCards } from '@/components/admin-dashboard/dashboard-cards';
 import { DataTable } from '@/components/admin-dashboard/data-table';
 
@@ -13,6 +16,22 @@ const columns = [
 ];
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
+
+  if (loading) {
+    return <div className="p-6">Loading...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Admin Dashboard Overview</h1>
