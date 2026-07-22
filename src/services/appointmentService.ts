@@ -1,3 +1,5 @@
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+
 const getAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -12,7 +14,7 @@ export const bookAppointment = async (appointmentData: {
   doctorId: string;
   date: Date;
 }) => {
-  const response = await fetch(`/api/appointments`, {
+  const response = await fetch(`${BACKEND}/api/appointments`, {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -27,7 +29,7 @@ export const bookAppointment = async (appointmentData: {
 };
 
 export const getMyAppointments = async () => {
-  const response = await fetch(`/api/my-appointments`, {
+  const response = await fetch(`${BACKEND}/api/my-appointments`, {
     headers: getAuthHeaders(),
     credentials: "include",
   });

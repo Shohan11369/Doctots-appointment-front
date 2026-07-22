@@ -1,3 +1,5 @@
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+
 const getAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -13,7 +15,7 @@ export const submitReview = async (reviewData: {
   rating: number;
   comment: string;
 }) => {
-  const response = await fetch(`/api/reviews`, {
+  const response = await fetch(`${BACKEND}/api/reviews`, {
     method: "POST",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -29,7 +31,7 @@ export const submitReview = async (reviewData: {
 };
 
 export const getDoctorReviews = async (doctorId: string) => {
-  const response = await fetch(`/api/doctor/${doctorId}/reviews`);
+  const response = await fetch(`${BACKEND}/api/doctor/${doctorId}/reviews`);
   if (!response.ok) {
     throw new Error("Failed to fetch doctor reviews");
   }
@@ -37,7 +39,7 @@ export const getDoctorReviews = async (doctorId: string) => {
 };
 
 export const getMyReviews = async () => {
-  const response = await fetch(`/api/my-reviews`, {
+  const response = await fetch(`${BACKEND}/api/my-reviews`, {
     credentials: "include",
     headers: getAuthHeaders(),
   });
@@ -48,7 +50,7 @@ export const getMyReviews = async () => {
 };
 
 export const getDoctorDashboardReviews = async () => {
-  const response = await fetch(`/api/doctor/reviews`, {
+  const response = await fetch(`${BACKEND}/api/doctor/reviews`, {
     credentials: "include",
     headers: getAuthHeaders(),
   });
@@ -59,7 +61,7 @@ export const getDoctorDashboardReviews = async () => {
 };
 
 export const deleteReview = async (reviewId: string) => {
-  const response = await fetch(`/api/reviews/${reviewId}`, {
+  const response = await fetch(`${BACKEND}/api/reviews/${reviewId}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -73,7 +75,7 @@ export const deleteReview = async (reviewId: string) => {
 };
 
 export const getPublicReviews = async () => {
-  const response = await fetch(`/api/reviews`);
+  const response = await fetch(`${BACKEND}/api/reviews`);
   if (!response.ok) {
     throw new Error("Failed to fetch public reviews");
   }
