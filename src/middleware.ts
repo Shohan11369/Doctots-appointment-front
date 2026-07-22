@@ -5,8 +5,6 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const hasToken = request.cookies.has('token');
   
-  console.log(`Middleware: Path ${path}, HasToken: ${hasToken}`);
-  
   // 1. Explicitly ignore auth and public pages to prevent loops
   if (path === "/login" || path === "/register" || path === "/") {
     return NextResponse.next();
@@ -19,8 +17,6 @@ export function middleware(request: NextRequest) {
     path.startsWith("/doctor-dashboard");
 
   if (isProtected && !hasToken) {
-    console.log(`Middleware: Redirecting to login for ${path}`);
-    
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectPath", path);
     loginUrl.searchParams.set("message", "Please login to continue.");
