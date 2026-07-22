@@ -1,10 +1,8 @@
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
-
 export const login = async (credentials: {
   email: string;
   password: string;
 }) => {
-  const response = await fetch(`${BACKEND}/api/login`, {
+  const response = await fetch(`/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
@@ -29,7 +27,7 @@ export const register = async (userData: {
   password: string;
   role: string;
 }) => {
-  const response = await fetch(`${BACKEND}/api/register`, {
+  const response = await fetch(`/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
@@ -48,7 +46,7 @@ export const getMe = async () => {
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers: Record<string, string> = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const response = await fetch(`${BACKEND}/api/me`, {
+  const response = await fetch(`/api/me`, {
     credentials: "include",
     headers,
   });

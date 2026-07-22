@@ -1,5 +1,3 @@
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
-
 const getAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -24,7 +22,7 @@ const monthNames = [
 ];
 
 export const getPatientDashboardStats = async () => {
-  const response = await fetch(`${BACKEND}/api/my-appointments`, {
+  const response = await fetch(`/api/my-appointments`, {
     headers: getAuthHeaders(),
     credentials: "include",
   });
@@ -49,7 +47,7 @@ export const getPatientDashboardStats = async () => {
 };
 
 export const getPatientDashboardChartData = async () => {
-  const response = await fetch(`${BACKEND}/api/my-appointments`, {
+  const response = await fetch(`/api/my-appointments`, {
     headers: getAuthHeaders(),
     credentials: "include",
   });
