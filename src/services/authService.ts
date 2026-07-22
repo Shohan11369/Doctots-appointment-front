@@ -19,6 +19,8 @@ export const login = async (credentials: {
   // Store token in localStorage for Authorization header usage
   if (data && data.token) {
     localStorage.setItem("token", data.token);
+    // Set cookie for middleware access
+    document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Lax;`;
   }
   return data;
 };
