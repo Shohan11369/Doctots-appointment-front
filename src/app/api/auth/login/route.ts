@@ -7,7 +7,17 @@ export async function POST(request: Request) {
     console.log('Login attempt with:', data);
     
     const result = await login(data);
-    return successResponse(result);
+    const response = successResponse(result);
+    if (result.token) {
+        response.cookies.set('token', result.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 86400 // 1 day
+        });
+    }
+    return response;
   } catch (error) {
     // Check if it's a fetch-related error
     console.error('Detailed Login Error:', {
