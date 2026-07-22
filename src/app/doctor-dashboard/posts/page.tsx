@@ -10,8 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function DoctorPostsPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [name, setName] = useState("");
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [body, setBody] = useState("");
+  const [fees, setFees] = useState<number | "">("");
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -36,21 +39,36 @@ export default function DoctorPostsPage() {
     event.preventDefault();
     setError(null);
 
-    if (!title.trim() || !body.trim()) {
-      setError("Both title and body are required.");
+    if (!name.trim() || !title.trim() || !description.trim() || !body.trim() || !fees) {
+      setError("All fields (name, title, description, content, and fees) are required.");
+      return;
+    }
+
+    if (!image) {
+      setError("Please upload an image before publishing the post.");
       return;
     }
 
     setSaving(true);
     try {
-      await createDoctorPost({ title, content: body, image });
+      await createDoctorPost({
+        name,
+        title,
+        description,
+        content: body,
+        fees: Number(fees),
+        image,
+      });
+      setName("");
       setTitle("");
+      setDescription("");
       setBody("");
+      setFees("");
       setImage(null);
       await fetchPosts();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create post:", err);
-      setError("Could not create post. Please try again.");
+      setError(err.message || "Could not create post. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -58,8 +76,11 @@ export default function DoctorPostsPage() {
 
   const columns = [
     { key: "doctorName", label: "Doctor" },
+    { key: "name", label: "Name" },
     { key: "title", label: "Title" },
-    { key: "body", label: "Content" },
+    { key: "description", label: "Description" },
+    { key: "content", label: "Content" },
+    { key: "fees", label: "Fees" },
     { key: "imageUrl", label: "Image" },
     { key: "createdAt", label: "Created" },
   ];
@@ -79,25 +100,53 @@ export default function DoctorPostsPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Post name"
+            />
+            <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Post title"
             />
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Post description"
+            />
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="w-full min-h-[120px] rounded-md border border-input bg-transparent p-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="w-full min-h-30 rounded-md border border-input bg-transparent p-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               placeholder="Post content"
+            />
+            <Input
+              type="number"
+              value={fees}
+              onChange={(e) => setFees(e.target.value ? Number(e.target.value) : "")}
+              placeholder="Consultation fees ($)"
+              step="0.01"
+              min="0"
             />
             <div className="space-y-2">
               <label className="block text-sm font-medium text-muted-foreground">
-                Post Image
+                Post Image (Max 1MB)
               </label>
               <div className="rounded-md border border-border bg-card/70 p-3">
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setImage(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    if (file && file.size > 1024 * 1024) {
+                      setError("Image size must be less than 1MB");
+                      setImage(null);
+                      e.target.value = "";
+                    } else {
+                      setError(null);
+                      setImage(file);
+                    }
+                  }}
                   className="w-full text-sm text-muted-foreground file:rounded-md file:border file:border-input file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:text-slate-700"
                 />
               </div>
@@ -140,10 +189,10 @@ export default function DoctorPostsPage() {
                 <span className="text-sm text-muted-foreground">No image</span>
               );
             }
-            if (key === "body") {
+            if (key === "content") {
               return (
                 <span className="block max-w-xl whitespace-pre-wrap">
-                  {row.body}
+                  {row.content}
                 </span>
               );
             }

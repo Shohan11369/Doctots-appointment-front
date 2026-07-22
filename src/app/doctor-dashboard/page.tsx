@@ -12,9 +12,9 @@ export default function DoctorDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
@@ -40,11 +40,15 @@ export default function DoctorDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">Doctor Dashboard Overview</h1>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold sm:text-3xl">
+          Doctor Dashboard Overview
+        </h1>
       </div>
       {loading ? (
-        <div>Loading doctor overview...</div>
+        <div className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
+          Loading doctor overview...
+        </div>
       ) : (
         <>
           <DoctorDashboardCards stats={stats} />

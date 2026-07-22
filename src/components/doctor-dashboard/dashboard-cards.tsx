@@ -15,14 +15,14 @@ export const DoctorDashboardCards = ({
   stats = defaultStats,
 }: DoctorDashboardCardsProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
         <Card key={stat.title}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">{stat.title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{stat.value}</p>
+            <p className="text-2xl font-bold sm:text-3xl">{stat.value}</p>
           </CardContent>
         </Card>
       ))}

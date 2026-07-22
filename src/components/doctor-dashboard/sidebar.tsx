@@ -29,28 +29,33 @@ const links = [
 export const DoctorSidebar = () => {
   const pathname = usePathname();
   return (
-    <aside className="w-64 border-r bg-background min-h-screen p-6">
-      <h2 className="font-bold text-2xl text-primary mb-8">MediQueue Pro</h2>
-      <nav className="space-y-2">
+    <aside className="w-full border-b bg-background p-4 md:sticky md:top-0 md:h-screen md:w-64 md:border-b-0 md:border-r md:p-6">
+      <div className="flex items-center justify-between gap-3 md:block">
+        <h2 className="text-xl font-bold text-primary sm:text-2xl">
+          MediQueue Pro
+        </h2>
+        <p className="text-sm text-muted-foreground md:hidden">Doctor Panel</p>
+      </div>
+      <nav className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:mt-8 md:grid-cols-1 md:gap-2">
         {links.map((link) => (
           <Link
             key={link.name}
             href={link.href}
             className={cn(
-              "flex items-center gap-3 p-3 rounded-lg hover:bg-muted",
+              "flex items-center justify-center gap-2 rounded-lg p-3 text-sm transition-colors hover:bg-muted md:justify-start md:gap-3",
               pathname === link.href && "bg-primary text-primary-foreground",
             )}
           >
-            <link.icon size={20} />
-            {link.name}
+            <link.icon size={18} />
+            <span>{link.name}</span>
           </Link>
         ))}
         <Link
           href="/login"
-          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted mt-8 text-destructive"
+          className="flex items-center justify-center gap-2 rounded-lg p-3 text-sm text-destructive transition-colors hover:bg-muted md:mt-8 md:justify-start md:gap-3"
         >
-          <LogOut size={20} />
-          Logout
+          <LogOut size={18} />
+          <span>Logout</span>
         </Link>
       </nav>
     </aside>
