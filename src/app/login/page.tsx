@@ -18,6 +18,7 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirectPath") || "/";
+  const message = searchParams.get("message");
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -27,14 +28,37 @@ function LoginContent() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setError(null);
-      await login({ email: data.email, password: data.password });
+      
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || "Login failed");
+      }
+      
+      // Still need to store in localStorage for getMe to work as currently written, 
+      // even if we also set the cookie for middleware.
+      if (result.data && result.data.token) {
+        localStorage.setItem("token", result.data.token);
+      }
+      
       const user = await getMe();
-      const nextPath =
+      
+      // Determine the default dashboard path based on role
+      const roleDashboard = 
         user.role === "admin"
           ? "/admin-dashboard"
           : user.role === "doctor"
             ? "/doctor-dashboard"
-            : redirectPath;
+            : "/dashboard";
+
+      // Use redirectPath if it exists and is not the root, otherwise use role dashboard
+      const nextPath = (redirectPath && redirectPath !== "/") ? redirectPath : roleDashboard;
 
       setSuccess(true);
       setTimeout(() => {
@@ -42,7 +66,7 @@ function LoginContent() {
       }, 500);
     } catch (error) {
       console.error("Login failed:", error);
-      setError("Invalid email or password.");
+      setError(error instanceof Error ? error.message : "An unexpected error occurred.");
     }
   };
 
@@ -52,6 +76,11 @@ function LoginContent() {
         <CardTitle className="text-2xl font-bold tracking-tight text-center">
           Login
         </CardTitle>
+        {message && (
+          <p className="text-sm text-blue-500 font-medium text-center mt-2">
+            {message}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

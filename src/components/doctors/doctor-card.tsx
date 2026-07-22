@@ -1,4 +1,5 @@
-import Link from 'next/link';
+"use client";
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
@@ -16,6 +17,12 @@ interface Doctor {
 }
 
 export const DoctorCard = ({ doctor }: { doctor: Doctor }) => {
+  const router = useRouter();
+
+  const handleViewProfile = () => {
+    router.push(`/doctors/${doctor._id}`);
+  };
+
   return (
     <Card className="flex flex-col border-border/50 hover:border-primary/50 transition-all duration-300">
       <CardHeader className="p-0">
@@ -41,8 +48,8 @@ export const DoctorCard = ({ doctor }: { doctor: Doctor }) => {
         )}
       </CardContent>
       <CardFooter className="p-5 pt-0 mt-auto">
-        <Button size="sm" variant="secondary" className="w-full" asChild>
-          <Link href={`/doctors/${doctor._id}`}>View Profile</Link>
+        <Button size="sm" variant="secondary" className="w-full" onClick={handleViewProfile}>
+          View Profile
         </Button>
       </CardFooter>
     </Card>

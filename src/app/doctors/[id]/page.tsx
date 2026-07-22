@@ -20,15 +20,6 @@ export default function DoctorDetailsPage() {
   const [reviewRefresh, setReviewRefresh] = useState(0);
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="));
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
     if (id) {
       getDoctorById(id)
         .then((data) => {
@@ -39,9 +30,15 @@ export default function DoctorDetailsPage() {
         })
         .finally(() => setLoading(false));
     }
-  }, [id, router]);
+  }, [id]);
 
   const handleBookAppointment = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      router.push(`/login?redirectPath=/doctors/${id}`);
+      return;
+    }
+
     setBooking(true);
     try {
       await bookAppointment({ doctorId: id, date: new Date() });

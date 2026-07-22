@@ -114,15 +114,10 @@ export const createDoctorPost = async (postData: {
     formData.append("image", postData.image);
   }
 
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
   const response = await fetch(`${BACKEND}/api/doctor/posts`, {
     method: "POST",
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
     body: formData,
   });
 

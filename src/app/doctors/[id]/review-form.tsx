@@ -19,6 +19,12 @@ export function DoctorReviewForm({
   const [message, setMessage] = useState<string | null>(null);
 
   const handleSubmit = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      window.location.href = `/login?redirectPath=/doctors/${doctorId}`;
+      return;
+    }
+
     if (!comment.trim()) {
       setMessage("Please add a review comment.");
       return;

@@ -16,8 +16,7 @@ export const login = async (credentials: {
   }
 
   const data = await response.json();
-  // Store token in localStorage for Authorization header usage
-  if (data && data.token) {
+  if (data && data.token && typeof window !== "undefined") {
     localStorage.setItem("token", data.token);
   }
   return data;
@@ -48,6 +47,7 @@ export const getMe = async () => {
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers: Record<string, string> = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  
   const response = await fetch(`${BACKEND}/api/me`, {
     credentials: "include",
     headers,

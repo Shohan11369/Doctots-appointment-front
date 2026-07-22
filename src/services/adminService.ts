@@ -1,13 +1,19 @@
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
-export const getAdminAppointments = async () => {
+const getAuthHeaders = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+};
+
+export const getAdminAppointments = async () => {
   const response = await fetch(`${BACKEND}/api/admin/appointments`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error("Failed to fetch admin appointments");
@@ -16,13 +22,9 @@ export const getAdminAppointments = async () => {
 };
 
 export const getAdminOverview = async () => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/overview`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error("Failed to fetch admin overview");
@@ -31,15 +33,9 @@ export const getAdminOverview = async () => {
 };
 
 export const updateAppointmentStatus = async (id: string, status: string) => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/appointments/${id}`, {
     method: "PATCH",
-    headers,
+    headers: getAuthHeaders(),
     credentials: "include",
     body: JSON.stringify({ status }),
   });
@@ -50,14 +46,10 @@ export const updateAppointmentStatus = async (id: string, status: string) => {
 };
 
 export const deleteAppointment = async (id: string) => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/appointments/${id}`, {
     method: "DELETE",
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error("Failed to delete appointment");
@@ -66,39 +58,27 @@ export const deleteAppointment = async (id: string) => {
 };
 
 export const getAdminRequests = async () => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/requests`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error("Failed to fetch admin requests");
   return response.json();
 };
 
 export const getAdminReviews = async () => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/reviews`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error("Failed to fetch admin reviews");
   return response.json();
 };
 
 export const getAdminProfile = async () => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const response = await fetch(`${BACKEND}/api/admin/profile`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!response.ok) throw new Error("Failed to fetch admin profile");
   return response.json();
