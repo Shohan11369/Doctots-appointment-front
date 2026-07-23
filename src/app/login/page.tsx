@@ -28,7 +28,7 @@ function LoginContent() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setError(null);
-      
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,37 +36,50 @@ function LoginContent() {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.message || "Login failed");
       }
-      
-      // Still need to store in localStorage for getMe to work as currently written, 
-      // even if we also set the cookie for middleware.
+
+      // Save Token
       if (result.data && result.data.token) {
         localStorage.setItem("token", result.data.token);
       }
-      
+
+      // Get Logged-in User
       const user = await getMe();
-      
-      // Determine the default dashboard path based on role
-      const roleDashboard = 
+
+      // Save Role
+      if (user?.role) {
+        localStorage.setItem("role", user.role);
+      }
+
+      // Determine dashboard by role
+      const roleDashboard =
         user.role === "admin"
           ? "/admin-dashboard"
           : user.role === "doctor"
-            ? "/doctor-dashboard"
-            : "/dashboard";
+          ? "/doctor-dashboard"
+          : "/dashboard";
 
-      // Use redirectPath if it exists and is not the root, otherwise use role dashboard
-      const nextPath = (redirectPath && redirectPath !== "/") ? redirectPath : roleDashboard;
+      // Redirect
+      const nextPath =
+        redirectPath && redirectPath !== "/"
+          ? redirectPath
+          : roleDashboard;
 
       setSuccess(true);
+
       setTimeout(() => {
         router.push(nextPath);
       }, 500);
     } catch (error) {
       console.error("Login failed:", error);
-      setError(error instanceof Error ? error.message : "An unexpected error occurred.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred."
+      );
     }
   };
 
@@ -76,12 +89,14 @@ function LoginContent() {
         <CardTitle className="text-2xl font-bold tracking-tight text-center">
           Login
         </CardTitle>
+
         {message && (
           <p className="text-sm text-blue-500 font-medium text-center mt-2">
             {message}
           </p>
         )}
       </CardHeader>
+
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <Input
@@ -90,6 +105,7 @@ function LoginContent() {
             placeholder="Email"
             className="bg-card/50"
           />
+
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -97,6 +113,7 @@ function LoginContent() {
               placeholder="Password"
               className="bg-card/50"
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -105,16 +122,19 @@ function LoginContent() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
+
           {error && (
             <p className="text-sm text-destructive font-medium text-center">
               {error}
             </p>
           )}
+
           {success && (
             <p className="text-sm text-emerald-500 font-medium text-center">
               Login successful! Redirecting...
             </p>
           )}
+
           <Button className="w-full" type="submit" disabled={success}>
             Login
           </Button>

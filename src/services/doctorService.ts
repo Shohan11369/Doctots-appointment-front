@@ -10,6 +10,19 @@ const getAuthHeaders = () => {
   return headers;
 };
 
+
+export const getAllDoctorPosts = async () => {
+  const res = await fetch(
+    `${BACKEND}/api/posts`
+  );
+
+  if(!res.ok){
+    throw new Error("Failed to fetch doctor posts");
+  }
+
+  return res.json();
+};
+
 export const getDoctors = async () => {
   const response = await fetch(`${BACKEND}/api/doctors`);
 
@@ -93,13 +106,24 @@ export const getDoctorPosts = async () => {
   }
 
   const data = await response.json();
-  return data.map((post: any) => ({
-    ...post,
-    imageUrl:
-      post.imageUrl && post.imageUrl.startsWith("/")
-        ? `${BACKEND}${post.imageUrl}`
-        : post.imageUrl,
-  }));
+  return data.map((post: any) => {
+    const imageValue = post.imageUrl ?? post.image ?? post.imageData ?? null;
+    const normalizedImageUrl =
+      typeof imageValue === "string"
+        ? imageValue.startsWith("data:image/") ||
+          imageValue.startsWith("http://") ||
+          imageValue.startsWith("https://")
+          ? imageValue
+          : imageValue.startsWith("/")
+            ? `${BACKEND}${imageValue}`
+            : imageValue
+        : null;
+
+    return {
+      ...post,
+      imageUrl: normalizedImageUrl,
+    };
+  });
 };
 
 const compressImageBeforeUpload = async (file: File) => {
@@ -144,6 +168,17 @@ const compressImageBeforeUpload = async (file: File) => {
   });
 };
 
+const fileToBase64 = async (file: File) => {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Failed to read image file."));
+    reader.readAsDataURL(file);
+  });
+
+  return dataUrl;
+};
+
 export const createDoctorPost = async (postData: {
   name: string;
   title: string;
@@ -158,16 +193,18 @@ export const createDoctorPost = async (postData: {
   const content = postData.content?.trim() ?? "";
   const fees = Number(postData.fees ?? 0);
 
-  if (!name || !title || !description || !content || !fees) {
+  if (!name || !title || !description || !content || Number.isNaN(fees) || fees < 0) {
     throw new Error("All fields are required.");
   }
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("content", content);
-  formData.append("fees", String(fees));
+  const payload = {
+    name,
+    title,
+    description,
+    content,
+    fees,
+    image: null as string | null,
+  };
 
   let image = postData.image ?? null;
   if (image) {
@@ -179,17 +216,16 @@ export const createDoctorPost = async (postData: {
       );
     }
 
-    formData.append("image", image, image.name);
+    payload.image = await fileToBase64(image);
   }
 
   const headers = getAuthHeaders();
-  delete (headers as any)["Content-Type"];
 
   const response = await fetch(`${BACKEND}/api/doctor/posts`, {
     method: "POST",
     credentials: "include",
     headers,
-    body: formData,
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {

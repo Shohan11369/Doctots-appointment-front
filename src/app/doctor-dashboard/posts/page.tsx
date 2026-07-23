@@ -39,7 +39,10 @@ export default function DoctorPostsPage() {
     event.preventDefault();
     setError(null);
 
-    if (!name.trim() || !title.trim() || !description.trim() || !body.trim() || !fees) {
+    const parsedFees = Number(fees);
+    const hasValidFees = typeof fees === "number" || (typeof fees === "string" && fees.trim() !== "") && !Number.isNaN(parsedFees);
+
+    if (!name.trim() || !title.trim() || !description.trim() || !body.trim() || !hasValidFees) {
       setError("All fields (name, title, description, content, and fees) are required.");
       return;
     }
